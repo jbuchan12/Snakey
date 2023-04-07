@@ -1,4 +1,5 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { IPlayAreaBoundaries } from 'src/Interfaces/IPlayAreaBoundaries';
 
 @Component({
   selector: 'app-snake',
@@ -15,6 +16,13 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 export class SnakeComponent {
 
   @ViewChild('snake') _SnakeElementRef: ElementRef | undefined;
+  @Input() playBoundaries : IPlayAreaBoundaries = {
+    leftBoundary : 0,
+    rightBoundary : 0,
+    topBoundary : 0,
+    bottomBoundary : 0
+  }
+
   private _MovementSpeed : number = 10;
 
   /**
@@ -28,32 +36,44 @@ export class SnakeComponent {
   }
 
   /**
+   * Gets access to the real snake element
+   * @returns The real snake element
+   */
+  private getRealSnakeElement() : HTMLDivElement {
+
+    if(this._SnakeElementRef?.nativeElement == undefined)
+      throw new Error("Snake native element is undefined");
+
+    return this._SnakeElementRef?.nativeElement as HTMLDivElement;  
+  }
+
+  /**
    * Moves the snake around the play area
    * @param key Which key was pressed on the keyboard
    */
   private move(key : string) : void{
 
-    if(this._SnakeElementRef?.nativeElement == undefined)
-      return;
-
-    const snakeDivElement = this._SnakeElementRef.nativeElement as HTMLDivElement;
+    const snakeDivElement = this.getRealSnakeElement();
 
     switch(key){
       case 'd':
         this.moveRight(snakeDivElement);
-        return;
+        break;
       case 'a':
         this.moveLeft(snakeDivElement);
-        return;
+        break;
       case 'w':
         this.moveUp(snakeDivElement);
-        return;
+        break;
       case 's':
         this.moveDown(snakeDivElement);
-        return;
+        break;
       default:
         return;
     }
+
+    if(this.hasSnakedHitBoundary())
+      window.alert("Game Over");
   }
 
   /**
@@ -105,4 +125,27 @@ export class SnakeComponent {
       ? `${currentPosNumber += this._MovementSpeed}px`
       : `${currentPosNumber -= this._MovementSpeed}px`
   }
+
+    /**
+   * Checks to see if the snake has hit any of the boundaries
+   * @returns Has the snake hit the boundary
+   */
+    private hasSnakedHitBoundary() : boolean{
+
+      const snakeDivElement = this.getRealSnakeElement();
+  
+      if(snakeDivElement.offsetLeft <= this.playBoundaries.leftBoundary)
+        return true;
+  
+      if((snakeDivElement.clientWidth + snakeDivElement.offsetLeft) - this.playBoundaries.leftBoundary >= this.playBoundaries.rightBoundary)
+        return true
+  
+      if(snakeDivElement.offsetTop <= this.playBoundaries.topBoundary)
+        return true
+  
+      if((snakeDivElement.clientHeight + snakeDivElement.offsetTop) - this.playBoundaries.topBoundary >= this.playBoundaries.bottomBoundary)
+        return true;
+  
+      return false;
+    }
 }

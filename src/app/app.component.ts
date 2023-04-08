@@ -1,10 +1,12 @@
 import { AfterViewChecked, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { IPlayAreaBoundaries } from 'src/Interfaces/IPlayAreaBoundaries';
+import { FoodComponent } from './food/food.component';
+import { ICoordinate } from 'src/Interfaces/ICoordinate';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
 })
 
 /**
@@ -13,6 +15,7 @@ import { IPlayAreaBoundaries } from 'src/Interfaces/IPlayAreaBoundaries';
 export class AppComponent implements AfterViewChecked {   
   title = 'Snakey';
   @ViewChild('playArea') _PlayAreaRef: ElementRef | undefined;
+  @ViewChild(FoodComponent) foodComponent: FoodComponent | undefined;
 
   playAreaBoundaries : IPlayAreaBoundaries = {
     leftBoundary : 0,
@@ -21,10 +24,36 @@ export class AppComponent implements AfterViewChecked {
     bottomBoundary : 0
   }
 
+  foodCoordinate : ICoordinate = {
+    x : 0,
+    y : 0
+  }
+
+  /**
+   * The after view checked angular event call
+   */
   ngAfterViewChecked(): void {
-    if(this._PlayAreaRef?.nativeElement == undefined || 
-       this.playAreaBoundaries.leftBoundary !== 0)
+    this.setPlayAreaBoundaries();
+    this.setFoodPosition();
+  }
+
+  /**
+   * Set the position of the snake food in the game
+   */
+  private setFoodPosition() : void{
+    if(this.foodComponent?._FoodElementRef == undefined)
       return;
+
+    this.foodCoordinate = this.foodComponent.getPosition();
+  }
+
+  /**
+   * Set the boundaries of the play area
+   */
+  private setPlayAreaBoundaries() : void {
+    if(this._PlayAreaRef?.nativeElement == undefined || 
+      this.playAreaBoundaries.leftBoundary !== 0)
+     return;
 
     const realPlayArea = this._PlayAreaRef.nativeElement as HTMLDivElement;
 

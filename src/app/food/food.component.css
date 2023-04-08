@@ -1,0 +1,8 @@
+.food{
+    height: 25px;
+    background-color: orange;
+    position: absolute;
+    width: 25px;
+    margin-left: 50vh;
+    margin-top: 50vh;
+}

@@ -1,4 +1,5 @@
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { ICoordinate } from 'src/Interfaces/ICoordinate';
 import { IPlayAreaBoundaries } from 'src/Interfaces/IPlayAreaBoundaries';
 
 @Component({
@@ -21,6 +22,11 @@ export class SnakeComponent {
     rightBoundary : 0,
     topBoundary : 0,
     bottomBoundary : 0
+  }
+
+  @Input() foodCoordinate : ICoordinate = {
+    x : 0,
+    y : 0
   }
 
   private _MovementSpeed : number = 10;
